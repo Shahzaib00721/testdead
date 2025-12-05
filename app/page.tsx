@@ -45,7 +45,7 @@ const DeadbeatDetective = () => {
   ];
 
   // Smooth scroll function
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (sectionId:string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       const navHeight = 120; // Adjust based on your navbar height
@@ -93,7 +93,7 @@ const DeadbeatDetective = () => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
