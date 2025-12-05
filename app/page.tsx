@@ -143,23 +143,33 @@ const DeadbeatDetective = () => {
                 Sign Up
               </button>
             </div>
+           
 
+            
             {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2"
-            >
-              <div className="w-6 h-5 flex flex-col justify-between">
-                <span className="w-full h-0.5 bg-gray-700"></span>
-                <span className="w-full h-0.5 bg-gray-700"></span>
-                <span className="w-full h-0.5 bg-gray-700"></span>
-              </div>
-            </button>
+<button
+  onClick={() => setIsMenuOpen(!isMenuOpen)}
+  className="md:hidden p-2"
+>
+  {isMenuOpen ? (
+    // Close Icon (X)
+    <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  ) : (
+    // Hamburger Icon
+    <div className="w-6 h-5 flex flex-col justify-between">
+      <span className="w-full h-0.5 bg-gray-700"></span>
+      <span className="w-full h-0.5 bg-gray-700"></span>
+      <span className="w-full h-0.5 bg-gray-700"></span>
+    </div>
+  )}
+</button>
           </div>
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden pb-4 border-t border-gray-200 mt-2 pt-4">
+            <div className="md:hidden pb-4 bg-white p-6 border-t border-gray-200 mt-2 pt-4">
               {navLinks.map((link) => (
                 <button
                   key={link.id}

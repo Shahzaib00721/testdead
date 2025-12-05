@@ -18,7 +18,7 @@ export default function Footer() {
             <p className="text-[16px] text-[#616161]">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.
             </p>
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 mb-5">
               <a href="#" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors">
                 <Facebook className="w-5 h-5 text-gray-700" />
               </a>
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className='md:pl-14'>
+          <div className='md:pl-14 mb-5'>
             <h3 className="text-[20px] font-semibold text-[#2F52FD] mb-4">Quick Links</h3>
             <ul className="space-y-3">
               <li><a href="#" className="text-sm text-[#616161] hover:text-gray-900 transition-colors">How It Works</a></li>
@@ -49,7 +49,7 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div className='md:pl-8'>
+          <div className='md:pl-8 mb-5'>
             <h3 className="text-[20px] font-semibold text-[#2F52FD] mb-4">Legal</h3>
             <ul className="space-y-3">
               <li><a href="#" className="text-sm text-[#616161] hover:text-gray-900 transition-colors">Privacy Policy</a></li>
