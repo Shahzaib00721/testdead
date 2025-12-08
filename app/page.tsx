@@ -1,5 +1,4 @@
 "use client"; 
-
 import First from './Components/First';
 import Second from './Components/Second';
 import Three  from './Components/Three';
@@ -17,6 +16,16 @@ const DeadbeatDetective = () => {
     name: '',
     location: ''
   });
+  
+  // Validation errors state - ye errors store karega
+  const [errors, setErrors] = useState<{
+    name?: string;
+    location?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+  }>({});
+
   const [advancedData, setAdvancedData] = useState({
     firstName: '',
     middleName: '',
@@ -35,20 +44,138 @@ const DeadbeatDetective = () => {
 
   const tabs = ['Name', 'Phone', 'Email', 'Address'];
   
-  // Updated navLinks with section IDs
   const navLinks = [
     { name: 'Home', id: 'home' },
     { name: 'How It Works', id: 'how-it-works' },
     { name: 'Use Cases', id: 'use-cases' },
     { name: 'Why Us', id: 'why-us' },
-    { name: 'FAQs', id: 'faqs' }
+    { name: 'FAQs', id: 'faqs1' }
   ];
 
-  // Smooth scroll function
-  const scrollToSection = (sectionId:string) => {
+  // Validation functions - har field ke liye alag validation
+  
+  // Name validation - kam se kam 2 characters chahiye
+  const validateName = (value: string): string | undefined => {
+    if (!value.trim()) {
+      return 'Name is required';
+    }
+    if (value.trim().length < 2) {
+      return 'Name must be at least 2 characters';
+    }
+    return undefined;
+  };
+
+  // Phone validation - 10 digits ki US phone number
+  const validatePhone = (value: string): string | undefined => {
+    if (!value.trim()) {
+      return 'Phone number is required';
+    }
+    // Remove spaces, dashes, parentheses
+    const cleanedPhone = value.replace(/[\s\-\(\)]/g, '');
+    if (!/^\d{10}$/.test(cleanedPhone)) {
+      return 'Phone number must be 10 digits';
+    }
+    return undefined;
+  };
+
+  // Email validation - proper email format
+  const validateEmail = (value: string): string | undefined => {
+    if (!value.trim()) {
+      return 'Email is required';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      return 'Please enter a valid email address';
+    }
+    return undefined;
+  };
+
+  // Address validation - kam se kam 5 characters
+  const validateAddress = (value: string): string | undefined => {
+    if (!value.trim()) {
+      return 'Address is required';
+    }
+    if (value.trim().length < 5) {
+      return 'Address must be at least 5 characters';
+    }
+    return undefined;
+  };
+
+  // Location validation - optional field
+  const validateLocation = (value: string): string | undefined => {
+    // Location optional hai, agar fill kiya to kam se kam 2 characters
+    if (value.trim() && value.trim().length < 2) {
+      return 'Location must be at least 2 characters';
+    }
+    return undefined;
+  };
+
+  // Real-time validation jab user type kare
+  const handleInputChange = (field: 'name' | 'location', value: string) => {
+    // Update form data
+    setFormData({ ...formData, [field]: value });
+    
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
+    }
+  };
+
+  // Handle search with full validation
+  const handleSearch = () => {
+    const newErrors: typeof errors = {};
+    
+    // Active tab ke hisaab se validate karo
+    switch(activeTab) {
+      case 'Name':
+        const nameError = validateName(formData.name);
+        if (nameError) newErrors.name = nameError;
+        break;
+      
+      case 'Phone':
+        const phoneError = validatePhone(formData.name);
+        if (phoneError) newErrors.phone = phoneError;
+        break;
+      
+      case 'Email':
+        const emailError = validateEmail(formData.name);
+        if (emailError) newErrors.email = emailError;
+        break;
+      
+      case 'Address':
+        const addressError = validateAddress(formData.name);
+        if (addressError) newErrors.address = addressError;
+        break;
+    }
+    
+    // Location validate karo (optional)
+    const locationError = validateLocation(formData.location);
+    if (locationError) newErrors.location = locationError;
+    
+    // Agar errors hain to set karo aur return
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    // No errors - proceed with search
+    alert(`Searching for: ${formData.name || 'Any'} in ${formData.location || 'Any Location'}`);
+    console.log('Search Data:', formData);
+    
+    // Clear form after successful search (optional)
+    // setFormData({ name: '', location: '' });
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const navHeight = 120; // Adjust based on your navbar height
+      const navHeight = 120;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - navHeight;
 
@@ -57,7 +184,6 @@ const DeadbeatDetective = () => {
         behavior: 'smooth'
       });
     }
-    // Close mobile menu after clicking
     setIsMenuOpen(false);
   };
 
@@ -79,28 +205,14 @@ const DeadbeatDetective = () => {
       setAdvancedData(prev => ({
         ...prev,
         firstName: formData.name,
-        city: formData.location
+        city: formData.location 
       }));
     }
   }, [showAdvancedSearch]);
 
-  const handleSearch = () => {
-    if (formData.name || formData.location) {
-      alert(`Searching for: ${formData.name || 'Any'} in ${formData.location || 'Any Location'}`);
-      console.log('Search Data:', formData);
-    } else {
-      alert('Please enter search criteria');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
   return (
-    <div className="min-h-screen font-sans bg-[#F7F8FF] mt-8">
+    <div className="min-h-screen absolute font-sans bg-[#F7F8FF] mt-8 ">
+      <div className='sticky top-0 left-0 right-0 bg-[#F7F8FF]  h-7'></div>
       {/* Navigation Bar */}
       <nav className={`
         transition-all duration-300 z-50
@@ -113,14 +225,12 @@ const DeadbeatDetective = () => {
           ${isScrolled ? 'max-w-7xl' : 'max-w-7xl'}
         `}>
           <div className="flex justify-between items-center h-[50px] sm:h-[101px]">
-            {/* Logo */}
             <div className="flex items-center gap-2">
               <div className="flex flex-col gap-0.5">
                 <img className='w-[100px] sm:w-[140px] h-[33px] sm:h-[46px] cursor-pointer' src="img1 (4).png" alt="" onClick={() => scrollToSection('home')} />
               </div>
             </div>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center font-sans font-semibold gap-6">
               {navLinks.map((link) => (
                 <button
@@ -134,40 +244,33 @@ const DeadbeatDetective = () => {
               ))}
             </div>
 
-            {/* Auth Buttons */}
             <div className="hidden md:flex items-center gap-3">
-              <button className="px-4 cursor-pointer py-2 text-blue-600 font-semibold text-[16px] border border-blue-600 rounded-[10px] w-[87px] h-[48px] hover:bg-blue-50 transition-colors">
+              <button className="px-4 cursor-pointer py-2 text-blue-600 font-semibold text-[16px]  border border-blue-600 rounded-[10px] w-[87px] h-[48px] hover:bg-blue-50 transition-colors">
                 Log In
               </button>
               <button className="px-4 cursor-pointer py-2 bg-blue-600 text-white font-semibold text-[16px] rounded-[10px] w-[100px] h-[48px] hover:bg-blue-700 transition-colors">
                 Sign Up
               </button>
             </div>
-           
 
-            
-            {/* Mobile Menu Button */}
-<button
-  onClick={() => setIsMenuOpen(!isMenuOpen)}
-  className="md:hidden p-2"
->
-  {isMenuOpen ? (
-    // Close Icon (X)
-    <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  ) : (
-    // Hamburger Icon
-    <div className="w-6 h-5 flex flex-col justify-between">
-      <span className="w-full h-0.5 bg-gray-700"></span>
-      <span className="w-full h-0.5 bg-gray-700"></span>
-      <span className="w-full h-0.5 bg-gray-700"></span>
-    </div>
-  )}
-</button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2"
+            >
+              {isMenuOpen ? (
+                <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <div className="w-6 h-5 flex flex-col justify-between">
+                  <span className="w-full h-0.5 bg-gray-700"></span>
+                  <span className="w-full h-0.5 bg-gray-700"></span>
+                  <span className="w-full h-0.5 bg-gray-700"></span>
+                </div>
+              )}
+            </button>
           </div>
 
-          {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden pb-4 bg-white p-6 border-t border-gray-200 mt-2 pt-4">
               {navLinks.map((link) => (
@@ -194,7 +297,6 @@ const DeadbeatDetective = () => {
 
       {/* Hero Section - Home */}
       <div id="home" className="max-w-7xl mx-auto px-4 md:px-6 py-8 sm:py-16 lg:py-20 pt-22 sm:pt-36 lg:pt-55">
-        {/* Main Heading */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
             Find <span className="text-blue-600">Anyone</span> Who Owes You
@@ -211,16 +313,21 @@ const DeadbeatDetective = () => {
         {/* Search Box */}
         <div className="max-w-7xl mx-auto">
           <div className={`
-            flex gap-4 bg-white w-fit px-3 pt-3 sm:gap-12 rounded-tl rounded-tr-[10px] border border-gray-200 overflow-x-auto
+            flex gap-4 bg-white w-fit px-3 pt-3 sm:gap-12 rounded-tl-[10px] rounded-tr-[10px] border border-gray-200 overflow-x-auto
             transition-all duration-500
             ${showAdvancedSearch ? 'max-h-0 opacity-0 mb-0 overflow-hidden' : 'max-h-20 opacity-100'}
           `}>
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  // Clear errors when switching tabs
+                  setErrors({});
+                  setFormData({ name: '', location: '' });
+                }}
                 className={`
-                  pb-1 sm:pb-4 text-[16px] sm:text-[16px]  transition-all duration-300 relative whitespace-nowrap cursor-pointer
+                  pb-1 sm:pb-4 text-[16px] sm:text-[16px] transition-all duration-300 relative whitespace-nowrap cursor-pointer
                   ${activeTab === tab 
                     ? 'text-blue-600 font-bold' 
                     : 'text-gray-500 hover:text-gray-900'}
@@ -233,45 +340,68 @@ const DeadbeatDetective = () => {
               </button>
             ))}
           </div>
+          
           <div className={`
-            bg-white rounded-br-[10px] rounded-tr-[10px] rounded-bl-[10px] border  shadow-md 
+            bg-white rounded-br-[10px] rounded-tr-[10px] rounded-bl-[10px] border shadow-md 
             px-4 sm:px-8 pb-6 sm:pb-8 pt-6 sm:pt-8
             transition-all duration-500
             ${showAdvancedSearch ? 'border-1 border-blue-600 p-4' : ''}
           `}>
-            {/* Tabs */}
-
             {/* Basic Search Fields */}
             <div className={`
               transition-all duration-500
               ${showAdvancedSearch ? 'max-h-0 opacity-0 overflow-hidden' : 'max-h-96 opacity-100'}
             `}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-3 sm:gap-5 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-3 sm:gap-5 items-start">
+                {/* First Input with Error - active tab ke mutabiq placeholder */}
                 <div className="flex flex-col">
                   <input
                     type="text"
                     placeholder={activeTab}
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="w-full px-4 py-3 text-black border border-gray-300 rounded-[10px] text-base sm:text-lg outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-400 hover:border-gray-400"
+                    className={`
+                      w-full px-4 py-3 text-black border rounded-[10px] text-base sm:text-lg outline-none transition-all duration-300
+                      ${errors.name || errors.phone || errors.email || errors.address
+                        ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100' 
+                        : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'}
+                      placeholder:text-gray-400 hover:border-gray-400
+                    `}
                   />
+                  {/* Error message display - agar error hai to dikhao */}
+                  {(errors.name || errors.phone || errors.email || errors.address) && (
+                    <span className="text-red-500 text-sm mt-1">
+                      {errors.name || errors.phone || errors.email || errors.address}
+                    </span>
+                  )}
                 </div>
 
+                {/* Location Input with Error */}
                 <div className="flex flex-col">
                   <input
                     type="text"
                     placeholder="City/State or ZIP"
                     value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    onChange={(e) => handleInputChange('location', e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="w-full px-4 py-3 text-black border border-gray-300 rounded-[10px] text-base sm:text-lg outline-none transition-all duration-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-400 hover:border-gray-400"
+                    className={`
+                      w-full px-4 py-3 text-black border rounded-[10px] text-base sm:text-lg outline-none transition-all duration-300
+                      ${errors.location
+                        ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100' 
+                        : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'}
+                      placeholder:text-gray-400 hover:border-gray-400
+                    `}
                   />
+                  {errors.location && (
+                    <span className="text-red-500 text-sm mt-1">{errors.location}</span>
+                  )}
                 </div>
 
+                {/* Search Button */}
                 <button
                   onClick={handleSearch}
-                  className="w-full lg:w-auto cursor-pointer px-8 sm:px-17 py-3 bg-blue-600 text-white rounded-lg font-medium text-base sm:text-lg transition-all duration-300 hover:bg-blue-700 active:scale-95 whitespace-nowrap"
+                  className="w-full lg:w-auto cursor-pointer px-8 sm:px-17 py-3 bg-blue-600 text-white rounded-lg font-medium text-base sm:text-lg transition-all duration-300 hover:bg-blue-700 active:scale-95 whitespace-nowrap mt-0 lg:mt-0"
                 >
                   Search Now
                 </button>
@@ -425,7 +555,7 @@ const DeadbeatDetective = () => {
       <Four />
       <Five />
       <Six />
-      <div id="faqs"><Seven /></div>
+      <div id="faqs1"><Seven /></div>
       <Eight />
       <Nine />
     </div>
