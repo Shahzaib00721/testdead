@@ -296,7 +296,7 @@ const DeadbeatDetective = () => {
       </nav>
 
       {/* Hero Section - Home */}
-      <div id="home" className="max-w-7xl mx-auto px-4 md:px-6 py-8 sm:py-15 lg:py-21 pt-22 sm:pt-36 lg:pt-55">
+      <div id="home" className="max-w-7xl mx-auto px-4 md:px-6 py-8 sm:py-15 lg:py-20 pt-22 sm:pt-36 lg:pt-55">
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
             Find <span className="text-blue-600">Anyone</span> Who Owes You
