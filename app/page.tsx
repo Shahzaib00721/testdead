@@ -211,7 +211,7 @@ const DeadbeatDetective = () => {
   }, [showAdvancedSearch]);
 
   return (
-    <div className="min-h-screen absolute font-sans bg-[#F7F8FF] mt-8 ">
+    <div className="min-h-screen  font-sans bg-[#F7F8FF] mt-8 ">
       <div className='sticky top-0 left-0 right-0 bg-[#F7F8FF]  h-7'></div>
       {/* Navigation Bar */}
       <nav className={`
