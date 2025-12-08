@@ -121,7 +121,7 @@ const DeadbeatDetective = () => {
     }
   };
 
-  // Handle search with full validation
+  
   const handleSearch = () => {
     const newErrors: typeof errors = {};
     
@@ -213,7 +213,7 @@ const DeadbeatDetective = () => {
   return (
     <div className="min-h-screen  font-sans bg-[#F7F8FF] mt-8 ">
       <div className='sticky top-0 left-0 right-0 bg-[#F7F8FF]  h-7'></div>
-      {/* Navigation Bar */}
+    
       <nav className={`
         transition-all duration-300 z-50
         ${isScrolled 
@@ -310,7 +310,7 @@ const DeadbeatDetective = () => {
           </p>
         </div>
 
-        {/* Search Box */}
+       
         <div className="max-w-7xl mx-auto">
           <div className={`
             flex gap-4 bg-white w-fit px-3 pt-3 sm:gap-12 rounded-tl-[10px] rounded-tr-[10px] border border-gray-200 overflow-x-auto
@@ -322,7 +322,7 @@ const DeadbeatDetective = () => {
                 key={tab}
                 onClick={() => {
                   setActiveTab(tab);
-                  // Clear errors when switching tabs
+              
                   setErrors({});
                   setFormData({ name: '', location: '' });
                 }}

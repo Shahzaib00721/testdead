@@ -102,7 +102,7 @@ const FAQSection = () => {
         {/* Badge */}
         <div className="flex justify-center mb-5">
           <span className="inline-flex items-center cursor-pointer px-6 py-2 rounded-full text-[16px] font-semibold bg-white text-[#2F52FD] hover:bg-[#2F52FD] hover:text-white border-1 border-[#2F52FD]">
-            FAQ's
+            FAQ's 
           </span>
         </div>
 
