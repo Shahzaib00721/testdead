@@ -101,9 +101,9 @@ const DeadbeatDetective = () => {
     return undefined;
   };
 
-  // Location validation - optional field
+  
   const validateLocation = (value: string): string | undefined => {
-    // Location optional hai, agar fill kiya to kam se kam 2 characters
+    
     if (value.trim() && value.trim().length < 2) {
       return 'Location must be at least 2 characters';
     }
