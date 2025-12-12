@@ -9,6 +9,10 @@ import Seven from './Components/Seven';
 import Eight from './Components/Eight';
 import Nine from './Components/Nine';
 import React, { useState } from 'react';
+import Link from 'next/link';
+
+
+
 
 const DeadbeatDetective = () => {
   const [activeTab, setActiveTab] = useState('Name');
@@ -25,6 +29,33 @@ const DeadbeatDetective = () => {
     email?: string;
     address?: string;
   }>({});
+   
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
 
   const [advancedData, setAdvancedData] = useState({
     firstName: '',
@@ -53,6 +84,7 @@ const DeadbeatDetective = () => {
   ];
 
   // Validation functions - har field ke liye alag validation
+  
   
   // Name validation - kam se kam 2 characters chahiye
   const validateName = (value: string): string | undefined => {
@@ -101,6 +133,7 @@ const DeadbeatDetective = () => {
     return undefined;
   };
 
+  
   
   const validateLocation = (value: string): string | undefined => {
     
@@ -209,10 +242,12 @@ const DeadbeatDetective = () => {
       }));
     }
   }, [showAdvancedSearch]);
+  
 
   return (
+    
     <div className="min-h-screen  font-sans bg-[#F7F8FF] mt-8 ">
-      <div className='sticky top-0 left-0 right-0 bg-[#F7F8FF]  h-7'></div>
+      <div className='sticky top-0 left-0 right-0 bg-[#F7F8FF]  h-6'></div>
     
       <nav className={`
         transition-all duration-300 z-50
@@ -245,12 +280,20 @@ const DeadbeatDetective = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <button className="px-4 cursor-pointer py-2 text-blue-600 font-semibold text-[16px]  border border-blue-600 rounded-[10px] w-[87px] h-[48px] hover:bg-blue-50 transition-colors">
+
+            <Link href="/login">
+              <button   className="px-4 cursor-pointer py-2 text-blue-600 font-semibold text-[16px]  border border-blue-600 rounded-[10px] w-[87px] h-[48px] hover:bg-blue-50 transition-colors">
                 Log In
-              </button>
+              </button> 
+              </Link>
+             
+
+              
+           <Link href="/sign">
               <button className="px-4 cursor-pointer py-2 bg-blue-600 text-white font-semibold text-[16px] rounded-[10px] w-[100px] h-[48px] hover:bg-blue-700 transition-colors">
                 Sign Up
               </button>
+              </Link>
             </div>
 
             <button

@@ -15,7 +15,7 @@ const DataReportSection = () => {
 
         {/* Heading */}
         <h2 className="text-3xl sm:text-4xl lg:text-[38px] font-bold text-[#1F3241] text-center mb-5">
-          See What You'll Get
+          See What you ll Get
         </h2>
 
         {/* Description */}
