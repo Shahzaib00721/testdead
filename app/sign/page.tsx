@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Eye, EyeOff, Link } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,97 +12,156 @@ const SignUpPage = () => {
     password: '',
     confirmPassword: ''
   });
-  const [errors, setErrors] = useState({});
+
+  // Validation errors state
+  const [errors, setErrors] = useState<{
+    fullName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    terms?: string;
+  }>({});
+
+  // Validation Functions
+  const validateFullName = (name: string): string | undefined => {
+    if (!name.trim()) {
+      return 'Full name is required';
+    }
+    if (name.trim().length < 2) {
+      return 'Name must be at least 2 characters';
+    }
+    if (!/^[a-zA-Z\s]+$/.test(name)) {
+      return 'Name should only contain letters';
+    }
+    return undefined;
+  };
+
+  const validateEmail = (email: string): string | undefined => {
+    if (!email.trim()) {
+      return 'Email is required';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    return undefined;
+  };
+
+  const validatePassword = (password: string): string | undefined => {
+    if (!password) {
+      return 'Password is required';
+    }
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    return undefined;
+  };
+
+  const validateConfirmPassword = (confirmPassword: string, password: string): string | undefined => {
+    if (!confirmPassword) {
+      return 'Please confirm your password';
+    }
+    if (confirmPassword !== password) {
+      return 'Passwords do not match';
+    }
+    return undefined;
+  };
+
+  // Handle input changes with real-time validation clearing
+  const handleInputChange = (field: 'fullName' | 'email' | 'password' | 'confirmPassword', value: string) => {
+    setFormData({ ...formData, [field]: value });
+    
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
+    }
+  };
 
   const handleGoogleSignup = () => {
     console.log('Google signup clicked');
-    // Google OAuth integration yahan implement karein
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (formData.fullName.trim().length < 2) {
-      newErrors.fullName = 'Name must be at least 2 characters';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (!agreeToTerms) {
-      newErrors.terms = 'You must agree to the terms and conditions';
-    }
-
-    return newErrors;
+    alert('Google Sign Up will be implemented soon!');
   };
 
   const handleSignUp = () => {
-    const validationErrors = validateForm();
+    const newErrors: typeof errors = {};
     
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    // Validate all fields
+    const nameError = validateFullName(formData.fullName);
+    if (nameError) newErrors.fullName = nameError;
+    
+    const emailError = validateEmail(formData.email);
+    if (emailError) newErrors.email = emailError;
+    
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) newErrors.password = passwordError;
+    
+    const confirmPasswordError = validateConfirmPassword(formData.confirmPassword, formData.password);
+    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
+    
+    // Check terms agreement
+    if (!agreeToTerms) {
+      newErrors.terms = 'You must agree to terms and conditions';
+    }
+    
+    // If there are errors, set them and return
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
-
+    
+    // No errors - proceed with signup
     console.log('Sign up data:', formData);
-    alert('Account created successfully!');
-    // Sign up logic yahan implement karein
+    alert(`Account created successfully!\nName: ${formData.fullName}\nEmail: ${formData.email}`);
+    
+    // Clear form
+    setFormData({
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    });
+    setAgreeToTerms(false);
+    setErrors({});
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData({...formData, [field]: value});
-    if (errors[field]) {
-      setErrors({...errors, [field]: undefined});
-    }
-  };
-
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSignUp();
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F8FF] flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
         
         {/* Left Side - Branding */}
         <div className="text-center lg:text-left space-y-8">
           <div className="flex items-center justify-center lg:justify-start gap-4">
-            <img src="img1 (4).png" alt="" />
+            <img src="img1 (4).png" alt="Deadbeat Detective Logo" />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-              Find Anyone Who Owes You Money<br />in Less Than 60s.
+              Find Anyone Who Owes You Money in Less Than 60s.
             </h2>
             <p className="text-gray-600 text-base lg:text-lg">
               Instantly search public records, liens, and legal disputes with a click.
-              Deadbeat Detective brings transparency to your fingertips so
-              you're never left in the dark.
+              Deadbeat Detective brings transparency to your fingertips so you're never left in the dark.
             </p>
           </div>
         </div>
 
         {/* Right Side - Sign Up Form */}
-        <div className="bg-white rounded-2xl  p-8 lg:p-18">
+        <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
           <div className="space-y-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign Up</h2>
@@ -112,7 +171,7 @@ const SignUpPage = () => {
             {/* Google Sign Up Button */}
             <button
               onClick={handleGoogleSignup}
-              className="w-full flex items-center justify-center gap-3 px-4 py-2 border-1 border-gray-400 rounded-[12px] hover:border-blue-600 hover:bg-gray-50 transition-all duration-300"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-[12px] hover:border-blue-600 hover:bg-gray-50 transition-all duration-300"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -133,47 +192,47 @@ const SignUpPage = () => {
             </div>
 
             {/* Sign Up Form */}
-            <div className="space-y-8">
+            <div className="space-y-5">
               {/* Full Name */}
-              <div className="flex flex-col">
+              <div>
                 <input
                   type="text"
                   placeholder="Full Name"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className={`w-full px-4 py-2 border border-gray-400 rounded-[12px] outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                    errors.fullName 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                      : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-[12px] outline-none transition-all ${
+                    errors.fullName
+                      ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+                      : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
+                  } text-gray-900 placeholder:text-gray-400`}
                 />
                 {errors.fullName && (
-                  <span className="text-red-500 text-sm mt-1">{errors.fullName}</span>
+                  <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
                 )}
               </div>
 
               {/* Email */}
-              <div className="flex flex-col">
+              <div>
                 <input
                   type="email"
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className={`w-full px-4 py-2 border border-gray-400 rounded-[12px] outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                    errors.email 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                      : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-[12px] outline-none transition-all ${
+                    errors.email
+                      ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+                      : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
+                  } text-gray-900 placeholder:text-gray-400`}
                 />
                 {errors.email && (
-                  <span className="text-red-500 text-sm mt-1">{errors.email}</span>
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
 
               {/* Password */}
-              <div className="flex flex-col">
+              <div>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -181,11 +240,11 @@ const SignUpPage = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className={`w-full px-4 py-2 border border-gray-400 rounded-[12px] outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                      errors.password 
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                        : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-[12px] outline-none transition-all ${
+                      errors.password
+                        ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+                        : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
+                    } text-gray-900 placeholder:text-gray-400`}
                   />
                   <button
                     type="button"
@@ -196,12 +255,17 @@ const SignUpPage = () => {
                   </button>
                 </div>
                 {errors.password && (
-                  <span className="text-red-500 text-sm mt-1">{errors.password}</span>
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+                {!errors.password && formData.password && (
+                  <p className="text-gray-500 text-xs mt-1">
+                    Must be 8+ characters with uppercase, lowercase & number
+                  </p>
                 )}
               </div>
 
               {/* Confirm Password */}
-              <div className="flex flex-col">
+              <div>
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
@@ -209,11 +273,11 @@ const SignUpPage = () => {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className={`w-full px-4 py-2 border border-gray-400 rounded-[12px] outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                      errors.confirmPassword 
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                        : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-[12px] outline-none transition-all ${
+                      errors.confirmPassword
+                        ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+                        : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
+                    } text-gray-900 placeholder:text-gray-400`}
                   />
                   <button
                     type="button"
@@ -224,12 +288,12 @@ const SignUpPage = () => {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <span className="text-red-500 text-sm mt-1">{errors.confirmPassword}</span>
+                  <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
                 )}
               </div>
 
               {/* Terms and Conditions */}
-              <div className="flex flex-col">
+              <div>
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -237,43 +301,42 @@ const SignUpPage = () => {
                     onChange={(e) => {
                       setAgreeToTerms(e.target.checked);
                       if (errors.terms) {
-                        setErrors({...errors, terms: undefined});
+                        setErrors({ ...errors, terms: undefined });
                       }
                     }}
-                    className="w-4 h-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className={`w-4 h-4 mt-1 rounded text-blue-600 focus:ring-blue-500 cursor-pointer ${
+                      errors.terms ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
                   <span className="text-sm text-gray-700">
                     I agree to the{' '}
-                    <button className="text-blue-600 hover:text-blue-700 font-medium">
+                    <button type="button" className="text-blue-600 hover:text-blue-700 font-medium">
                       Terms and Conditions
                     </button>
                     {' '}and{' '}
-                    <button className="text-blue-600 hover:text-blue-700 font-medium">
+                    <button type="button" className="text-blue-600 hover:text-blue-700 font-medium">
                       Privacy Policy
                     </button>
                   </span>
                 </label>
                 {errors.terms && (
-                  <span className="text-red-500 text-sm mt-1">{errors.terms}</span>
+                  <p className="text-red-500 text-sm mt-1">{errors.terms}</p>
                 )}
               </div>
 
               <button
                 onClick={handleSignUp}
-                className="w-full py-2 bg-blue-600 text-white rounded-[12px] cursor-pointer font-semibold text-base hover:bg-blue-700 transition-colors duration-300"
+                className="w-full py-3 bg-blue-600 text-white rounded-xl cursor-pointer font-semibold text-base hover:bg-blue-700 transition-colors duration-300 shadow-lg shadow-blue-500/30"
               >
                 Sign Up
               </button>
             </div>
 
-            <p className="text-center text-gray-600">
+            <p className="text-center text-gray-600 text-sm">
               Already have an account?{' '}
-
-            
-                <button className="text-blue-600 cursor-pointer hover:text-blue-700 font-semibold">
-                  Log In
-                </button>
-             
+              <button type="button" className="text-blue-600 cursor-pointer hover:text-blue-700 font-semibold">
+                Log In
+              </button>
             </p>
           </div>
         </div>

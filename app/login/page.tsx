@@ -9,15 +9,73 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
+  
+  // Validation errors state
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
 
   const handleGoogleLogin = () => {
     console.log('Google login clicked');
     // Google OAuth integration yahan implement karein
   };
 
+  // Email validation
+  const validateEmail = (value: string): string | undefined => {
+    if (!value.trim()) {
+      return 'Email is required';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      return 'Please enter a valid email address';
+    }
+    return undefined;
+  };
+
+  // Password validation
+  const validatePassword = (value: string): string | undefined => {
+    if (!value) {
+      return 'Password is required';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return undefined;
+  };
+
+  // Real-time validation jab user type kare
+  const handleInputChange = (field: 'email' | 'password', value: string) => {
+    setFormData({ ...formData, [field]: value });
+    
+    // Clear error jab user type kare
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
+    }
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const newErrors: typeof errors = {};
+    
+    // Email validate karo
+    const emailError = validateEmail(formData.email);
+    if (emailError) newErrors.email = emailError;
+    
+    // Password validate karo
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) newErrors.password = passwordError;
+    
+    // Agar errors hain to set karo aur return
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    // No errors - proceed with login
     console.log('Login data:', formData);
+    alert('Login successful!');
     // Login logic yahan implement karein
   };
 
@@ -28,9 +86,6 @@ const LoginPage = () => {
         {/* Left Side - Branding */}
         <div className="text-center lg:text-left space-y-6">
           <div className="flex items-center justify-center lg:justify-start gap-4">
-           
-              
-           
             <div>
              <img className='w-130 h-40' src="img1 (4).png" alt="" />
             </div>
@@ -81,33 +136,49 @@ const LoginPage = () => {
 
             {/* Login Form */}
             <form onSubmit={handleLogin} className="space-y-6">
-              <div>
+              {/* Email Input with Validation */}
+              <div className="flex flex-col">
                 <input
                   type="email"
                   placeholder="Example@gmail.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-[12px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 text-gray-900 placeholder:text-gray-400"
-                  required
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-[12px] outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 transition-all duration-300 ${
+                    errors.email 
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+                      : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
+                  }`}
                 />
+                {errors.email && (
+                  <span className="text-red-500 text-sm mt-1">{errors.email}</span>
+                )}
               </div>
 
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="w-full  px-4 py-3 border border-gray-300 rounded-[12px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 text-gray-900 placeholder:text-gray-400"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute cursor-pointer  right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
+              {/* Password Input with Validation */}
+              <div className="flex flex-col">
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-[12px] outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 transition-all duration-300 ${
+                      errors.password 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+                        : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <span className="text-red-500 text-sm mt-1">{errors.password}</span>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
@@ -127,7 +198,7 @@ const LoginPage = () => {
 
               <button
                 type="submit"
-                className="w-full cursor-pointer  py-3 bg-blue-600 text-white rounded-lg font-semibold text-base hover:bg-blue-700 transition-colors duration-300"
+                className="w-full cursor-pointer py-3 bg-blue-600 text-white rounded-lg font-semibold text-base hover:bg-blue-700 transition-colors duration-300"
               >
                 Log In
               </button>
