@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -334,9 +335,12 @@ const SignUpPage = () => {
 
             <p className="text-center text-gray-600 text-sm">
               Already have an account?{' '}
+
+              <Link href="/login">
               <button type="button" className="text-blue-600 cursor-pointer hover:text-blue-700 font-semibold">
                 Log In
               </button>
+              </Link>
             </p>
           </div>
         </div>

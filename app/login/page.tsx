@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -207,7 +208,11 @@ const LoginPage = () => {
             <p className="text-center text-gray-600">
               Don't have an account?{' '}
               <a href="#" className="text-blue-600 hover:underline hover:text-blue-700 font-semibold">
+                
+                <Link href="/sign">
                 Sign Up
+                </Link>
+                
               </a>
             </p>
           </div>

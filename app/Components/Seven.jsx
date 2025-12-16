@@ -55,15 +55,15 @@ const FAQSection = () => {
 
   const FAQItem = ({ faq, index, isOpen }) => (
     <div 
-      className={`border rounded-[10px] transition-all duration-500 ${
+      className={`border rounded-[10px] transition-all duration-100  ${
         isOpen 
           ? 'border-blue-600 bg-blue-50' 
-          : 'border-gray-200 bg-[#F7F8FF] rounded-[15px] hover:border-gray-300'
+          : 'border-gray-200 bg-[#F7F8FF]  rounded-[15px] hover:border-gray-300'
       }`}
     >
       <button
         onClick={() => toggleFAQ(index)}
-        className="w-full flex items-center justify-between p-4 text-left"
+        className="w-full flex items-center   justify-between p-4 text-left"
       >
         <span className={`font-semibold cursor-pointer text-base md:text-[22px] pr-4 ${
           isOpen ? 'text-[#1F3241]' : 'text-[#1F3241]'

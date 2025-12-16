@@ -10,6 +10,7 @@ import Eight from './Components/Eight';
 import Nine from './Components/Nine';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { title } from 'process';
 
 
 
@@ -50,7 +51,7 @@ const DeadbeatDetective = () => {
 
 
 
-
+ 
 
 
 
@@ -242,6 +243,9 @@ const DeadbeatDetective = () => {
       }));
     }
   }, [showAdvancedSearch]);
+
+
+ 
   
   
 
@@ -316,23 +320,28 @@ const DeadbeatDetective = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="md:hidden pb-4 bg-white p-6 border-t border-gray-200 mt-2 pt-4">
+            <div className="md:hidden pb-4 w-76 -ml-9 bg-white p-4 border-t border-gray-200 mt-2 pt-4">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="block w-full text-left py-2 text-gray-700 hover:text-gray-900 text-[14px] font-medium"
+                  className="block w-full text-left  py-2 text-gray-700 hover:text-gray-900 text-[14px] font-medium"
                 >
                   {link.name}
                 </button>
               ))}
               <div className="flex flex-col gap-2 mt-4">
+
+                <Link href="/login">
                 <button className="w-full px-6 cursor-pointer py-2 text-blue-600 font-medium text-sm border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
                   Log In
                 </button>
+                </Link>
+                <Link href="/sign">
                 <button className="w-full px-6 cursor-pointer py-2 bg-blue-600 text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-colors">
                   Sign Up
                 </button>
+                </Link>
               </div>
             </div>
           )}
@@ -446,7 +455,7 @@ const DeadbeatDetective = () => {
                 <button
                   onClick={handleSearch}
                   className="w-full lg:w-auto cursor-pointer px-8 sm:px-17 py-3 bg-blue-600 text-white rounded-lg font-medium text-base sm:text-lg transition-all duration-300 hover:bg-blue-700 active:scale-95 whitespace-nowrap mt-0 lg:mt-0"
-                >
+                     > 
                   Search Now
                 </button>
               </div>
