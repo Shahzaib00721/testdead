@@ -15,16 +15,28 @@ const SignUpPage = () => {
   });
 
   // Validation errors state
-  const [errors, setErrors] = useState<{
-    fullName?: string;
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-    terms?: string;
-  }>({});
+  const [errors, setErrors] = useState({
+    fullName: undefined,
+    email: undefined,
+    password: undefined,
+    confirmPassword: undefined,
+    terms: undefined
+  });
+
+  // Password requirements state
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    hasNumber: false,
+    hasSpecialChar: false,
+    hasMinLength: false,
+    hasUppercase: false
+  });
+
+  // Track if fields have been touched
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [fullNameTouched, setFullNameTouched] = useState(false);
 
   // Validation Functions
-  const validateFullName = (name: string): string | undefined => {
+  const validateFullName = (name) => {
     if (!name.trim()) {
       return 'Full name is required';
     }
@@ -37,7 +49,7 @@ const SignUpPage = () => {
     return undefined;
   };
 
-  const validateEmail = (email: string): string | undefined => {
+  const validateEmail = (email) => {
     if (!email.trim()) {
       return 'Email is required';
     }
@@ -48,26 +60,32 @@ const SignUpPage = () => {
     return undefined;
   };
 
-  const validatePassword = (password: string): string | undefined => {
+  const validatePassword = (password) => {
     if (!password) {
       return 'Password is required';
     }
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters';
+    
+    // Check all requirements
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasMinLength = password.length >= 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    
+    setPasswordRequirements({
+      hasNumber,
+      hasSpecialChar,
+      hasMinLength,
+      hasUppercase
+    });
+    
+    if (!hasNumber || !hasSpecialChar || !hasMinLength || !hasUppercase) {
+      return 'Please meet all password requirements';
     }
-    if (!/(?=.*[a-z])/.test(password)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!/(?=.*[A-Z])/.test(password)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!/(?=.*\d)/.test(password)) {
-      return 'Password must contain at least one number';
-    }
+    
     return undefined;
   };
 
-  const validateConfirmPassword = (confirmPassword: string, password: string): string | undefined => {
+  const validateConfirmPassword = (confirmPassword, password) => {
     if (!confirmPassword) {
       return 'Please confirm your password';
     }
@@ -78,12 +96,34 @@ const SignUpPage = () => {
   };
 
   // Handle input changes with real-time validation clearing
-  const handleInputChange = (field: 'fullName' | 'email' | 'password' | 'confirmPassword', value: string) => {
+  const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
     
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors({ ...errors, [field]: undefined });
+    }
+    
+    // Real-time password validation
+    if (field === 'password') {
+      validatePassword(value);
+    }
+  };
+
+  // Handle blur events for validation
+  const handleEmailBlur = () => {
+    setEmailTouched(true);
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      setErrors({ ...errors, email: emailError });
+    }
+  };
+
+  const handleFullNameBlur = () => {
+    setFullNameTouched(true);
+    const nameError = validateFullName(formData.fullName);
+    if (nameError) {
+      setErrors({ ...errors, fullName: nameError });
     }
   };
 
@@ -93,7 +133,7 @@ const SignUpPage = () => {
   };
 
   const handleSignUp = () => {
-    const newErrors: typeof errors = {};
+    const newErrors = {};
     
     // Validate all fields
     const nameError = validateFullName(formData.fullName);
@@ -116,6 +156,8 @@ const SignUpPage = () => {
     // If there are errors, set them and return
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      setEmailTouched(true);
+      setFullNameTouched(true);
       return;
     }
     
@@ -132,9 +174,17 @@ const SignUpPage = () => {
     });
     setAgreeToTerms(false);
     setErrors({});
+    setEmailTouched(false);
+    setFullNameTouched(false);
+    setPasswordRequirements({
+      hasNumber: false,
+      hasSpecialChar: false,
+      hasMinLength: false,
+      hasUppercase: false
+    });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSignUp();
     }
@@ -201,6 +251,7 @@ const SignUpPage = () => {
                   placeholder="Full Name"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  onBlur={handleFullNameBlur}
                   onKeyPress={handleKeyPress}
                   className={`w-full px-4 py-3 border rounded-[12px] outline-none transition-all ${
                     errors.fullName
@@ -208,7 +259,7 @@ const SignUpPage = () => {
                       : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
                   } text-gray-900 placeholder:text-gray-400`}
                 />
-                {errors.fullName && (
+                {errors.fullName && fullNameTouched && (
                   <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
                 )}
               </div>
@@ -220,6 +271,7 @@ const SignUpPage = () => {
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
+                  onBlur={handleEmailBlur}
                   onKeyPress={handleKeyPress}
                   className={`w-full px-4 py-3 border rounded-[12px] outline-none transition-all ${
                     errors.email
@@ -227,7 +279,7 @@ const SignUpPage = () => {
                       : 'border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
                   } text-gray-900 placeholder:text-gray-400`}
                 />
-                {errors.email && (
+                {errors.email && emailTouched && (
                   <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
@@ -250,18 +302,54 @@ const SignUpPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                  <p className="text-red-500 text-sm font-medium mt-2">{errors.password}</p>
                 )}
-                {!errors.password && formData.password && (
-                  <p className="text-gray-500 text-xs mt-1">
-                    Must be 8+ characters with uppercase, lowercase & number
-                  </p>
+                
+                {/* Password Requirements List */}
+                {formData.password && (
+                  <div className="mt-3 space-y-2">
+                    <div className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
+                      passwordRequirements.hasNumber ? 'text-green-600' : 'text-gray-500'
+                    }`}>
+                      <svg className={`w-4 h-4 flex-shrink-0 ${passwordRequirements.hasNumber ? 'text-green-600' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>Must include a number</span>
+                    </div>
+                    
+                    <div className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
+                      passwordRequirements.hasSpecialChar ? 'text-green-600' : 'text-gray-500'
+                    }`}>
+                      <svg className={`w-4 h-4 flex-shrink-0 ${passwordRequirements.hasSpecialChar ? 'text-green-600' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>Must include a special character</span>
+                    </div>
+                    
+                    <div className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
+                      passwordRequirements.hasMinLength ? 'text-green-600' : 'text-gray-500'
+                    }`}>
+                      <svg className={`w-4 h-4 flex-shrink-0 ${passwordRequirements.hasMinLength ? 'text-green-600' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>Minimum 8 Characters</span>
+                    </div>
+                    
+                    <div className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
+                      passwordRequirements.hasUppercase ? 'text-green-600' : 'text-gray-500'
+                    }`}>
+                      <svg className={`w-4 h-4 flex-shrink-0 ${passwordRequirements.hasUppercase ? 'text-green-600' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>Must include at least 1 uppercase letter</span>
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -283,7 +371,7 @@ const SignUpPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
                   >
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -335,11 +423,10 @@ const SignUpPage = () => {
 
             <p className="text-center text-gray-600 text-sm">
               Already have an account?{' '}
-
               <Link href="/login">
-              <button type="button" className="text-blue-600 cursor-pointer hover:text-blue-700 font-semibold">
-                Log In
-              </button>
+                <button type="button" className="text-blue-600 cursor-pointer hover:text-blue-700 font-semibold">
+                  Log In
+                </button>
               </Link>
             </p>
           </div>

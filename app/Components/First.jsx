@@ -2,12 +2,16 @@ import React from 'react';
 import { Check } from 'lucide-react';
 
 const HowItWorksSection = () => {
+  
+ 
+
+
   return (
     <div className="w-full bg-white py-12 sm:py-16 lg:pb-30  px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Badge */}
         <div className="">
-          <span className="inline-block px-5 py-2.5 cursor-pointer mb-4 text-[14px]  bg-white text-blue-600 hover:bg-blue-600 hover:text-white  font-semibold rounded-full border-1 border-blue-600">
+          <span  className="inline-block px-5 py-2.5 cursor-pointer mb-4 text-[14px]  bg-white text-blue-600 hover:bg-blue-600 hover:text-white  font-semibold rounded-full border-1 border-blue-600">
             How It Works
           </span>
         </div>
