@@ -36,10 +36,10 @@ const LoginPage = () => {
            passwordRequirements.hasUppercase;
   };
 
-  const handleGoogleLogin = (e) => {
-    e.preventDefault();
-    console.log('Google login clicked');
-  };
+  const handleGoogleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+  console.log('Google login clicked');
+};
 
   // Email validation
   const validateEmail = (value = '') => {
