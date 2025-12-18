@@ -59,10 +59,10 @@ const LoginPage = () => {
   };
 
   // Password validation with requirements
-  const validatePassword = (value) => {
-    if (!value) {
-      return 'Password is required';
-    }
+ const validatePassword = (value: string) => {
+  if (!value) {
+    return 'Password is required';
+  }
     
     // Check all requirements
     const hasNumber = /\d/.test(value);
@@ -85,13 +85,13 @@ const LoginPage = () => {
   };
 
   // Real-time validation jab user type kare
-  const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    
-    // Clear error jab user type kare
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: undefined });
-    }
+  const handleInputChange = (field: string, value: string) => {
+  setFormData({ ...formData, [field]: value });
+  
+  // Clear error jab user type kare
+  if (errors[field as keyof typeof errors]) {
+    setErrors({ ...errors, [field]: undefined });
+  }
     
     // Real-time password validation
     if (field === 'password') {
@@ -101,56 +101,58 @@ const LoginPage = () => {
   };
 
   // Email validation when user leaves the field (onBlur)
-  const handleEmailBlur = () => {
-    setEmailTouched(true);
-    const emailError = validateEmail(formData.email);
-    if (emailError) {
-      setErrors({ ...errors, email: emailError });
-    }
-  };
+ const handleEmailBlur = () => {
+  setEmailTouched(true);
+  const emailError = validateEmail(formData.email);
+  if (emailError) {
+    setErrors({ ...errors, email: emailError as any });
+  }
+};
 
   // ✅ Password blur handler
   const handlePasswordBlur = () => {
     setPasswordTouched(true);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = (e:React.MouseEvent<HTMLButtonElement>   ) => {
     e.preventDefault();
     
     // ✅ Mark both fields as touched on login attempt
     setEmailTouched(true);
     setPasswordTouched(true);
     
-    const newErrors = {};
-    
-    // Email validate karo
-    const emailError = validateEmail(formData.email);
-    if (emailError) newErrors.email = emailError;
-    
-    // Password validate karo
-    const passwordError = validatePassword(formData.password);
-    if (passwordError) newErrors.password = passwordError;
-    
-    // Agar errors hain to set karo aur return
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+  const newErrors: any = {};
+
+// Email validate karo
+const emailError = validateEmail(formData.email);
+if (emailError) newErrors.email = emailError;
+
+// Password validate karo
+const passwordError = validatePassword(formData.password);
+if (passwordError) newErrors.password = passwordError;
+
+// Agar errors hain to set karo aur return
+if (Object.keys(newErrors).length > 0) {
+  setErrors(newErrors);
+  return;
+}
     
     // No errors - proceed with login
     console.log('Login data:', formData);
     alert('Login successful!');
   };
 
-  const handleForgotPassword = (e) => {
-    e.preventDefault();
-    console.log('Forgot password clicked');
-  };
+ const handleForgotPassword = (e: any) => {
+  e.preventDefault();
+  console.log('Forgot password clicked');
+  // Forgot password logic yahan implement karein
+};
 
-  const handleSignUpClick = (e) => {
-    e.preventDefault();
-    console.log('Sign up clicked');
-  };
+ const handleSignUpClick = (e: any) => {
+  e.preventDefault();
+  console.log('Sign up clicked');
+  // Sign up navigation yahan implement karein
+};
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
@@ -212,23 +214,23 @@ const LoginPage = () => {
               {/* Email Input with Validation */}
               <div className="flex flex-col">
                 <input
-                  type="email"
-                  placeholder="Example@gmail.com"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  onBlur={handleEmailBlur}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleLogin(e);
-                    }
-                  }}
-                  className={`w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 transition-all duration-300 ${
-                    errors.email 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                      : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
-                  }`}
-                />
+  type="email"
+  placeholder="Example@gmail.com"
+  value={formData.email}
+  onChange={(e) => handleInputChange('email', e.target.value)}
+  onBlur={handleEmailBlur}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleLogin(e as any);
+    }
+  }}
+  className={`w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 transition-all duration-300 ${
+    errors.email 
+      ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+      : 'border-gray-300 focus:border-blue-600 focus:ring-blue-100'
+  }`}
+/>
                 {errors.email && emailTouched && (
                   <span className="text-red-500 text-xs mt-1">{errors.email}</span>
                 )}
@@ -246,7 +248,7 @@ const LoginPage = () => {
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        handleLogin(e);
+                        handleLogin(e as any);
                       }
                     }}
                     className={`w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 transition-all duration-300 ${
@@ -327,12 +329,12 @@ const LoginPage = () => {
                   <span className="text-sm text-gray-700">Remember me</span>
                 </label>
                 <a 
-                  href="#" 
-                  onClick={handleForgotPassword}
-                  className="text-sm text-blue-600 underline hover:text-blue-700 font-medium"
-                >
-                  Forgot Password?
-                </a>
+  href="#" 
+  onClick={(e) => handleForgotPassword(e)}
+  className="text-sm text-blue-600 underline hover:text-blue-700 font-medium"
+>
+  Forgot Password?
+</a>
               </div>
 
               <button

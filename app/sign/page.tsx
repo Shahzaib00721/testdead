@@ -36,7 +36,7 @@ const SignUpPage = () => {
   const [fullNameTouched, setFullNameTouched] = useState(false);
 
   // Validation Functions
-  const validateFullName = (name) => {
+  const validateFullName = (name:string) => {
     if (!name.trim()) {
       return 'Full name is required';
     }
@@ -49,7 +49,7 @@ const SignUpPage = () => {
     return undefined;
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email:string) => {
     if (!email.trim()) {
       return 'Email is required';
     }
@@ -60,7 +60,7 @@ const SignUpPage = () => {
     return undefined;
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = (password:string) => {
     if (!password) {
       return 'Password is required';
     }
@@ -84,46 +84,45 @@ const SignUpPage = () => {
     
     return undefined;
   };
-
-  const validateConfirmPassword = (confirmPassword, password) => {
-    if (!confirmPassword) {
-      return 'Please confirm your password';
-    }
-    if (confirmPassword !== password) {
-      return 'Passwords do not match';
-    }
-    return undefined;
-  };
+const validateConfirmPassword = (confirmPassword: string, password: string) => {
+  if (!confirmPassword) {
+    return 'Please confirm your password';
+  }
+  if (confirmPassword !== password) {
+    return 'Passwords do not match';
+  }
+  return undefined;
+};
 
   // Handle input changes with real-time validation clearing
-  const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: undefined });
-    }
-    
-    // Real-time password validation
-    if (field === 'password') {
-      validatePassword(value);
-    }
-  };
+ const handleInputChange = (field: string, value: string) => {
+  setFormData({ ...formData, [field]: value });
+  
+  // Clear error when user starts typing
+  if (errors[field as keyof typeof errors]) {
+    setErrors({ ...errors, [field]: undefined });
+  }
+  
+  // Real-time password validation
+  if (field === 'password') {
+    validatePassword(value);
+  }
+};
 
   // Handle blur events for validation
-  const handleEmailBlur = () => {
-    setEmailTouched(true);
-    const emailError = validateEmail(formData.email);
-    if (emailError) {
-      setErrors({ ...errors, email: emailError });
-    }
-  };
+const handleEmailBlur = () => {
+  setEmailTouched(true);
+  const emailError = validateEmail(formData.email);
+  if (emailError) {
+    setErrors({ ...errors, email: emailError } as any);
+  }
+};
 
   const handleFullNameBlur = () => {
     setFullNameTouched(true);
     const nameError = validateFullName(formData.fullName);
     if (nameError) {
-      setErrors({ ...errors, fullName: nameError });
+      setErrors({ ...errors, fullName: nameError  } as any);
     }
   };
 
@@ -132,29 +131,40 @@ const SignUpPage = () => {
     alert('Google Sign Up will be implemented soon!');
   };
 
-  const handleSignUp = () => {
-    const newErrors = {};
-    
-    // Validate all fields
-    const nameError = validateFullName(formData.fullName);
-    if (nameError) newErrors.fullName = nameError;
-    
-    const emailError = validateEmail(formData.email);
-    if (emailError) newErrors.email = emailError;
-    
-    const passwordError = validatePassword(formData.password);
-    if (passwordError) newErrors.password = passwordError;
-    
-    const confirmPasswordError = validateConfirmPassword(formData.confirmPassword, formData.password);
-    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
-    
-    // Check terms agreement
-    if (!agreeToTerms) {
-      newErrors.terms = 'You must agree to terms and conditions';
-    }
+ const handleSignUp = () => {
+  const newErrors: any = {};
+  
+  // Validate all fields
+  const nameError = validateFullName(formData.fullName);
+  if (nameError) newErrors.fullName = nameError;
+  
+  const emailError = validateEmail(formData.email);
+  if (emailError) newErrors.email = emailError;
+  
+  const passwordError = validatePassword(formData.password);
+  if (passwordError) newErrors.password = passwordError;
+  
+  const confirmPasswordError = validateConfirmPassword(formData.confirmPassword, formData.password);
+  if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
+  
+  // Check terms agreement
+  if (!agreeToTerms) {
+    newErrors.terms = 'You must agree to terms and conditions';
+  }
+  
+  // If there are errors, set them and return
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    setEmailTouched(true);
+    setFullNameTouched(true);
+    return;
+  }
+  
+  // Continue with sign up logic...
+
     
     // If there are errors, set them and return
-    if (Object.keys(newErrors).length > 0) {
+    if (Object.keys(newErrors).length > 0) { 
       setErrors(newErrors);
       setEmailTouched(true);
       setFullNameTouched(true);
@@ -163,28 +173,28 @@ const SignUpPage = () => {
     
     // No errors - proceed with signup
     console.log('Sign up data:', formData);
-    alert(`Account created successfully!\nName: ${formData.fullName}\nEmail: ${formData.email}`);
-    
-    // Clear form
-    setFormData({
-      fullName: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    });
-    setAgreeToTerms(false);
-    setErrors({});
-    setEmailTouched(false);
-    setFullNameTouched(false);
-    setPasswordRequirements({
-      hasNumber: false,
-      hasSpecialChar: false,
-      hasMinLength: false,
-      hasUppercase: false
-    });
-  };
+alert(`Account created successfully!\nName: ${formData.fullName}\nEmail: ${formData.email}`);
 
-  const handleKeyPress = (e) => {
+// Clear form
+setFormData({
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+});
+setAgreeToTerms(false);
+setErrors({} as any);
+setEmailTouched(false);
+setFullNameTouched(false);
+setPasswordRequirements({
+  hasNumber: false,
+  hasSpecialChar: false,
+  hasMinLength: false,
+  hasUppercase: false
+});
+ };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSignUp();
     }
